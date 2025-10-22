@@ -1,0 +1,81 @@
+class Book:
+    def __init__(self, tytul, autor, rok_wydania):
+        self.tytul = tytul
+        self.autor = autor
+        self.rok_wydania = rok_wydania
+        self.wypozyczona = False
+
+    def wypozycz(self):
+        if not self.wypozyczona:
+            self.wypozyczona = True
+            print(f"Książka '{self.tytul}' została wypożyczona.")
+        else:
+            print(f"Książka '{self.tytul}' jest już wypożyczona!")
+
+    def zwroc(self):
+        if self.wypozyczona:
+            self.wypozyczona = False
+            print(f"Książka '{self.tytul}' została zwrócona.")
+        else:
+            print(f"Książka '{self.tytul}' nie była wypożyczona.")
+
+    def __str__(self):
+        status = "wypożyczona" if self.wypozyczona else "dostępna"
+        return f"'{self.tytul}' ({self.autor}, {self.rok_wydania}) – {status}"
+
+
+class Library:
+    def __init__(self):
+        self.lista_ksiazek = []
+
+    def dodaj_ksiazke(self, book):
+        self.lista_ksiazek.append(book)
+        print(f"Dodano książkę: {book.tytul}")
+
+    def wyszukaj_wg_tytulu(self, tytul):
+        wyniki = [book for book in self.lista_ksiazek if tytul.lower() in book.tytul.lower()]
+        return wyniki
+
+    def wyszukaj_wg_autora(self, autor):
+        wyniki = [book for book in self.lista_ksiazek if autor.lower() in book.autor.lower()]
+        return wyniki
+
+    def wypozycz(self, tytul):
+        for book in self.lista_ksiazek:
+            if book.tytul.lower() == tytul.lower():
+                book.wypozycz()
+                return
+        print(f"Nie znaleziono książki o tytule '{tytul}'.")
+
+    def __str__(self):
+        if not self.lista_ksiazek:
+            return "Biblioteka jest pusta."
+        return "\n".join(str(book) for book in self.lista_ksiazek)
+
+
+# --- Przykład użycia ---
+if __name__ == "__main__":
+    biblioteka = Library()
+
+    ks1 = Book("Lalka", "Bolesław Prus", 1890)
+    ks2 = Book("Pan Tadeusz", "Adam Mickiewicz", 1834)
+
+    biblioteka.dodaj_ksiazke(ks1)
+    biblioteka.dodaj_ksiazke(ks2)
+
+    print("\nLista książek:")
+    print(biblioteka)
+
+    print("\nWyszukiwanie wg autora 'Prus':")
+    for k in biblioteka.wyszukaj_wg_autora("Prus"):
+        print(k)
+
+    print("\nWypożyczanie książki 'Lalka':")
+    biblioteka.wypozycz("Lalka")
+
+    print("\nLista książek po wypożyczeniu:")
+    print(biblioteka)
+
+    print("\nZwracanie książki 'Lalka':")
+    ks1.zwroc()
+    print(biblioteka)
