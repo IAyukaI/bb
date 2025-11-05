@@ -1,0 +1,165 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+class Pojazd
+{
+    private double pojSilnika;
+    private int iloscKol;
+    private string nrRejestracyjny;
+
+    public Pojazd(double pojSilnika, int iloscKol, string nrRejestracyjny)
+    {
+        this.pojSilnika = pojSilnika;
+        this.iloscKol = iloscKol;
+        this.nrRejestracyjny = nrRejestracyjny;
+    }
+
+    public double GetPojSilnika() => pojSilnika;
+    public int GetIloscKol() => iloscKol;
+    public string GetNrRejestracyjny() => nrRejestracyjny;
+
+    public void SetPojSilnika(double pojSilnika) => this.pojSilnika = pojSilnika;
+    public void SetIloscKol(int iloscKol) => this.iloscKol = iloscKol;
+    public void SetNrRejestracyjny(string nrRejestracyjny) => this.nrRejestracyjny = nrRejestracyjny;
+
+    public virtual Dictionary<string, object> Show()
+    {
+        return new Dictionary<string, object>
+        {
+            { "pojemnosc_silnika", pojSilnika },
+            { "ilosc_kol", iloscKol },
+            { "nr_rejestracyjny", nrRejestracyjny }
+        };
+    }
+}
+
+class SamochodOsobowy : Pojazd
+{
+    private int iloscDrzwi;
+    private string skrzyniaBiegow;
+    private string typNadwozia;
+
+    public SamochodOsobowy(double pojSilnika, int iloscKol, string nrRejestracyjny, int iloscDrzwi, string skrzyniaBiegow, string typNadwozia)
+        : base(pojSilnika, iloscKol, nrRejestracyjny)
+    {
+        this.iloscDrzwi = iloscDrzwi;
+        this.skrzyniaBiegow = skrzyniaBiegow;
+        this.typNadwozia = typNadwozia;
+    }
+
+    public int GetIloscDrzwi() => iloscDrzwi;
+    public string GetSkrzyniaBiegow() => skrzyniaBiegow;
+    public string GetTypNadwozia() => typNadwozia;
+
+    public void SetIloscDrzwi(int iloscDrzwi) => this.iloscDrzwi = iloscDrzwi;
+    public void SetSkrzyniaBiegow(string skrzyniaBiegow) => this.skrzyniaBiegow = skrzyniaBiegow;
+    public void SetTypNadwozia(string typNadwozia) => this.typNadwozia = typNadwozia;
+
+    public override Dictionary<string, object> Show()
+    {
+        var data = base.Show();
+        data["ilosc_drzwi"] = iloscDrzwi;
+        data["skrzynia_biegow"] = skrzyniaBiegow;
+        data["typ_nadwozia"] = typNadwozia;
+        return data;
+    }
+}
+
+class Motor : Pojazd
+{
+    private string typ;
+    private string naped;
+    private bool kufry;
+
+    public Motor(double pojSilnika, string nrRejestracyjny, string typ, string naped, bool kufry)
+        : base(pojSilnika, 2, nrRejestracyjny)
+    {
+        this.typ = typ;
+        this.naped = naped;
+        this.kufry = kufry;
+    }
+
+    public string GetTyp() => typ;
+    public string GetNaped() => naped;
+    public bool GetKufry() => kufry;
+
+    public void SetTyp(string typ) => this.typ = typ;
+    public void SetNaped(string naped) => this.naped = naped;
+    public void SetKufry(bool kufry) => this.kufry = kufry;
+
+    public override Dictionary<string, object> Show()
+    {
+        var data = base.Show();
+        data["typ"] = typ;
+        data["naped"] = naped;
+        data["kufry"] = kufry;
+        return data;
+    }
+}
+
+class Ciezarowka : Pojazd
+{
+    private double ladownosc;
+    private int liczbaOsi;
+    private bool przyczepa;
+
+    public Ciezarowka(double pojSilnika, string nrRejestracyjny, double ladownosc, int liczbaOsi, bool przyczepa)
+        : base(pojSilnika, 6, nrRejestracyjny)
+    {
+        this.ladownosc = ladownosc;
+        this.liczbaOsi = liczbaOsi;
+        this.przyczepa = przyczepa;
+    }
+
+    public double GetLadownosc() => ladownosc;
+    public int GetLiczbaOsi() => liczbaOsi;
+    public bool GetPrzyczepa() => przyczepa;
+
+    public void SetLadownosc(double ladownosc) => this.ladownosc = ladownosc;
+    public void SetLiczbaOsi(int liczbaOsi) => this.liczbaOsi = liczbaOsi;
+    public void SetPrzyczepa(bool przyczepa) => this.przyczepa = przyczepa;
+
+    public override Dictionary<string, object> Show()
+    {
+        var data = base.Show();
+        data["ladownosc"] = ladownosc;
+        data["liczba_osi"] = liczbaOsi;
+        data["przyczepa"] = przyczepa;
+        return data;
+    }
+}
+
+class Program
+{
+        static string OpisPojazdu(Pojazd pojazd)
+        {
+            var dane = pojazd.Show();
+            var sb = new StringBuilder();
+            foreach (var kv in dane)
+            {
+                string key = char.ToUpper(kv.Key.Replace("_", " ")[0]) + kv.Key.Replace("_", " ").Substring(1);
+                sb.AppendLine($"{key}: {kv.Value}");
+            }
+            return sb.ToString();
+        }
+
+    static void Main(string[] args)
+    {
+        var auto = new SamochodOsobowy(1600, 4, "PO12345", 5, "manualna", "sedan");
+        var motor = new Motor(900, "WX6789", "sportowy", "łańcuch", true);
+        var ciezarowka = new Ciezarowka(5000, "KR9999", 12, 4, false);
+
+        Console.WriteLine("=== Samochód osobowy ===");
+        auto.SetNrRejestracyjny("abcdef");
+        Console.WriteLine(OpisPojazdu(auto));
+
+        Console.WriteLine("\n=== Motor ===");
+        motor.SetKufry(false);
+        Console.WriteLine(OpisPojazdu(motor));
+
+        Console.WriteLine("\n=== Ciężarówka ===");
+        ciezarowka.SetLadownosc(6);
+        Console.WriteLine(OpisPojazdu(ciezarowka));
+    }
+}
