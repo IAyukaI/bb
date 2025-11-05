@@ -1,0 +1,159 @@
+class Pojazd:
+    def __init__(self, poj_silnika, ilosc_kol, nr_rejestracyjny):
+        self.__poj_silnika = poj_silnika
+        self.__ilosc_kol = ilosc_kol
+        self.__nr_rejestracyjny = nr_rejestracyjny
+
+    def get_poj_silnika(self):
+        return self.__poj_silnika
+
+    def get_ilosc_kol(self):
+        return self.__ilosc_kol
+
+    def get_nr_rejestracyjny(self):
+        return self.__nr_rejestracyjny
+
+    def set_poj_silnika(self, poj_silnika):
+        self.__poj_silnika = poj_silnika
+
+    def set_ilosc_kol(self, ilosc_kol):
+        self.__ilosc_kol = ilosc_kol
+
+    def set_nr_rejestracyjny(self, nr_rejestracyjny):
+        self.__nr_rejestracyjny = nr_rejestracyjny
+
+    def show(self):
+        return {
+            "pojemnosc_silnika": self.__poj_silnika,
+            "ilosc_kol": self.__ilosc_kol,
+            "nr_rejestracyjny": self.__nr_rejestracyjny
+        }
+
+
+class Samochod_osobowy(Pojazd):
+    def __init__(self, poj_silnika, ilosc_kol, nr_rejestracyjny, ilosc_drzwi, skrzynia_biegow, typ_nadwozia):
+        super().__init__(poj_silnika, ilosc_kol, nr_rejestracyjny)
+        self.__ilosc_drzwi = ilosc_drzwi
+        self.__skrzynia_biegow = skrzynia_biegow
+        self.__typ_nadwozia = typ_nadwozia
+
+    def get_ilosc_drzwi(self):
+        return self.__ilosc_drzwi
+
+    def get_skrzynia_biegow(self):
+        return self.__skrzynia_biegow
+
+    def get_typ_nadwozia(self):
+        return self.__typ_nadwozia
+
+    def set_ilosc_drzwi(self, ilosc_drzwi):
+        self.__ilosc_drzwi = ilosc_drzwi
+
+    def set_skrzynia_biegow(self, skrzynia_biegow):
+        self.__skrzynia_biegow = skrzynia_biegow
+
+    def set_typ_nadwozia(self, typ_nadwozia):
+        self.__typ_nadwozia = typ_nadwozia
+
+    def show(self):
+        data = super().show()
+        data.update({
+            "ilosc_drzwi": self.__ilosc_drzwi,
+            "skrzynia_biegow": self.__skrzynia_biegow,
+            "typ_nadwozia": self.__typ_nadwozia
+        })
+        return data
+
+
+class Motor(Pojazd):
+    def __init__(self, poj_silnika, nr_rejestracyjny, typ, naped, kufry):
+        super().__init__(poj_silnika, 2, nr_rejestracyjny)
+        self.__typ = typ
+        self.__naped = naped
+        self.__kufry = kufry
+
+    def get_typ(self):
+        return self.__typ
+
+    def get_naped(self):
+        return self.__naped
+
+    def get_kufry(self):
+        return self.__kufry
+
+    def set_typ(self, typ):
+        self.__typ = typ
+
+    def set_naped(self, naped):
+        self.__naped = naped
+
+    def set_kufry(self, kufry):
+        self.__kufry = kufry
+
+    def show(self):
+        data = super().show()
+        data.update({
+            "typ": self.__typ,
+            "naped": self.__naped,
+            "kufry": self.__kufry
+        })
+        return data
+
+
+class Ciezarowka(Pojazd):
+    def __init__(self, poj_silnika, nr_rejestracyjny, ladownosc, liczba_osi, przyczepa):
+        super().__init__(poj_silnika, 6, nr_rejestracyjny)
+        self.__ladownosc = ladownosc
+        self.__liczba_osi = liczba_osi
+        self.__przyczepa = przyczepa
+
+    def get_ladownosc(self):
+        return self.__ladownosc
+
+    def get_liczba_osi(self):
+        return self.__liczba_osi
+
+    def get_przyczepa(self):
+        return self.__przyczepa
+
+    def set_ladownosc(self, ladownosc):
+        self.__ladownosc = ladownosc
+
+    def set_liczba_osi(self, liczba_osi):
+        self.__liczba_osi = liczba_osi
+
+    def set_przyczepa(self, przyczepa):
+        self.__przyczepa = przyczepa
+
+    def show(self):
+        data = super().show()
+        data.update({
+            "ladownosc": self.__ladownosc,
+            "liczba_osi": self.__liczba_osi,
+            "przyczepa": self.__przyczepa
+        })
+        return data
+
+
+def opis_pojazdu(pojazd):
+    dane = pojazd.show()
+    tekst = "\n".join(f"{klucz.replace('_', ' ').capitalize()}: {wartosc}" for klucz, wartosc in dane.items())
+    return tekst
+
+
+if __name__ == "__main__":
+    auto = Samochod_osobowy(1600, 4, "PO12345", 5, "manualna", "sedan")
+    motor = Motor(900, "WX6789", "sportowy", "łańcuch", True)
+    ciezarowka = Ciezarowka(5000, "KR9999", 12, 4, False)
+
+    print("=== Samochód osobowy ===")
+    auto.set_nr_rejestracyjny("abcdef")
+    print(opis_pojazdu(auto))
+
+    print("\n=== Motor ===")
+    motor.set_kufry(False)
+    print(opis_pojazdu(motor))
+
+    print("\n=== Ciężarówka ===")
+    ciezarowka.set_ladownosc(6)
+    print(opis_pojazdu(ciezarowka))
