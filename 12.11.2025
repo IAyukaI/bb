@@ -1,0 +1,21 @@
+class Pisaki:
+    # pola statyczne (wspólne dla wszystkich obiektów)
+    licznik = 0
+
+    def __init__(self, grubosc, rodzaj, kolor):
+        self.grubosc = grubosc
+        self.rodzaj = rodzaj  # np. 'mazak', 'dlugopis', 'olowek'
+        self.kolor = kolor
+
+        Pisaki.licznik += 1  # zwiększamy licznik przy każdym nowym obiekcie
+
+    @staticmethod
+    def ile_mazakow():
+        return Pisaki.licznik
+
+
+# --- przykład użycia ---
+p1 = Pisaki(1.0, "mazak", "czerwony")
+p2 = Pisaki(0.5, "dlugopis", "niebieski")
+
+print("Liczba pisaków:", Pisaki.ile_mazakow())
