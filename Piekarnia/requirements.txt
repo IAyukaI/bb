@@ -1,0 +1,5 @@
+PySide6
+SQLAlchemy
+bcrypt
+reportlab
+alembic   # opcjonalnie, do migracji bazy

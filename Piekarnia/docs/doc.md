@@ -1,0 +1,273 @@
+# Code Documentation
+
+This documentation provides a comprehensive overview of the modules and functionalities within the application. The application supports user registration, login functionalities, an administrative interface for managing users, and payment processing for products purchased by users.
+
+## Module: `admin_service.py`
+
+### Overview
+The `admin_service.py` module handles administrative actions related to user management such as retrieving, deleting, editing, and changing user roles. It utilizes SQLAlchemy to interact with the database.
+
+### Functions
+
+#### `get_all_users()`
+Retrieves a list of all users from the database.
+
+**Returns:**
+- A list of User objects.
+
+#### `delete_user(user_id: int) -> bool`
+Deletes a user identified by their user ID from the database.
+
+**Parameters:**
+- `user_id` (int): The ID of the user to be deleted.
+
+**Returns:**
+- `True` if the user was successfully deleted, otherwise `False`.
+
+#### `edit_user(user_id: int, new_username: str, new_email: str) -> bool`
+Edits the details of a user by their user ID. Checks for existing usernames and emails before making changes.
+
+**Parameters:**
+- `user_id` (int): The ID of the user to be edited.
+- `new_username` (str): The new username for the user.
+- `new_email` (str): The new email for the user.
+
+**Returns:**
+- `True` if the user was successfully updated, otherwise `False`.
+
+#### `change_user_role(user_id: int, new_role: str) -> bool`
+Changes the role of the user specified by their user ID.
+
+**Parameters:**
+- `user_id` (int): The ID of the user whose role needs to be changed.
+- `new_role` (str): The new role the user should have.
+
+**Returns:**
+- `True` if the role was successfully changed, otherwise `False`.
+
+---
+
+## Module: `users_window.py`
+
+### Overview
+The `users_window.py` module implements the graphical interface for the administrator panel, where all users are listed with options to delete, edit, or change user roles.
+
+### Class: `UsersWindow`
+A QWidget that represents the user management panel for the administrator.
+
+**Constructor:**
+```python
+def __init__(self):
+```
+
+**Methods:**
+- `load_users(self)`: Loads users from the database and displays them in the list widget.
+  
+- `show_user_history(self, item: QListWidgetItem)`: Displays purchase history for the selected user.
+
+- `handle_delete(self, user: User)`: Handles the deletion of a user upon confirmation.
+
+- `handle_edit(self, user: User)`: Opens a dialog to edit user details.
+
+- `handle_role(self, user: User)`: Opens a dialog to change the user's role.
+
+### Nested Classes:
+#### `EditUserDialog`
+A dialog for editing user information.
+
+#### `RoleDialog`
+A dialog for selecting a new user role.
+
+---
+
+## Module: `auth_service.py`
+
+### Overview
+The `auth_service.py` module handles user authentication, including logging in and registering new users.
+
+### Functions
+
+#### `login_user(username: str, password: str) -> User | None`
+Logs in a user by verifying their username and password.
+
+**Parameters:**
+- `username` (str): The username of the user trying to log in.
+- `password` (str): The password provided by the user.
+
+**Returns:**
+- The User object if authentication is successful; otherwise `None`.
+
+#### `register_user(username: str, password: str, email: str, credit_card: str) -> tuple[bool, str]`
+Registers a new user, including validation for uniqueness of username and email.
+
+**Parameters:**
+- `username` (str): The username for the new user.
+- `password` (str): The password for the new user.
+- `email` (str): The email for the new user.
+- `credit_card` (str): The credit card information (optional).
+
+**Returns:**
+- A tuple indicating success (`True` or `False`) and a message.
+
+---
+
+## Module: `database.py`
+
+### Overview
+This module sets up the database connection using SQLAlchemy and creates the necessary session manager.
+
+### Functions
+
+#### `init_db()`
+Creates all database tables defined in the `Base` metadata.
+
+---
+
+## Module: `auth_utils.py`
+
+### Overview
+This module provides utility functions for password hashing and verification.
+
+### Functions
+
+#### `hash_password(password: str) -> bytes`
+Hashes a given password.
+
+**Parameters:**
+- `password` (str): The plain text password to be hashed.
+
+**Returns:**
+- A hashed password in bytes.
+
+#### `verify_password(password: str, hashed: bytes) -> bool`
+Verifies a password against a hashed password.
+
+**Parameters:**
+- `password` (str): The plain text password to verify.
+- `hashed` (bytes): The hashed password to compare against.
+
+**Returns:**
+- `True` if they match; otherwise `False`.
+
+---
+
+## Module: `db_api.py`
+
+### Overview
+The `db_api.py` module provides an API for interacting with the main database, including user and product management.
+
+### Functions
+
+- CRUD operations for `User` and `Product` models (e.g., `create_user`, `get_all_products`, etc.).
+
+---
+
+## Module: `initialization.py`
+
+### Overview
+This module initializes the database and inserts sample data upon the initial application launch.
+
+### Functions
+- `init_sample_data()`: Adds pre-defined products if the product list is empty.
+- `create_default_admin()`: Creates a default admin user if it doesn’t exist.
+- `create_guest_user()`: Creates a guest user if it doesn’t exist.
+
+---
+
+## Module: `models.py`
+
+### Overview
+This module defines the SQLAlchemy models for the application including `User`, `Product`, and `Sale`.
+
+---
+
+## Module: `report_generator.py`
+
+### Overview
+Generates sales reports in PDF format.
+
+### Function
+
+#### `generate_report(filename: str, sales: list)`
+Generates a PDF report containing sales information.
+
+---
+
+## Module: `card_payment_window.py`
+
+### Overview
+Handles the credit card payment interface.
+
+### Class: `CardPaymentWindow`
+A QWidget for entering credit card information and processing payments.
+
+---
+
+## Module: `login_window.py`
+
+### Overview
+A login interface for user authentication.
+
+### Class: `LoginWindow`
+A QWidget that provides fields for username and password, along with buttons to log in or register a new user.
+
+---
+
+## Module: `main_window.py`
+
+### Overview
+This is the main application window that is displayed once a user logs in. 
+
+### Class: `MainWindow`
+Handles the display of products, shopping cart functionality, and features based on user roles.
+
+---
+
+## Module: `products_window.py`
+
+### Overview
+Displays a list of products available in the database.
+
+---
+
+## Module: `registration_window.py`
+
+### Overview
+Handles the user registration functionality.
+
+### Class: `RegistrationWindow`
+Allows new users to register by inputting their details.
+
+---
+
+## Module: `sales_window.py`
+
+### Overview
+Provides a user interface for registering sales.
+
+---
+
+## Module: `config.py`
+
+### Overview
+Configuration settings for the application, including the database URL.
+
+---
+
+## Module: `main.py`
+
+### Overview
+This is the entry point for the application where initialization occurs and the application GUI is launched.
+
+---
+
+### How to Use the Application
+1. **Run the application**, which initializes the database and creates sample data if required.
+2. **Log in** or register a new user using the provided interface.
+3. For admin users, access the user management panel to edit or delete users.
+4. **Browse products**, add items to your cart, and proceed to checkout with a valid payment method.
+
+This documentation should provide a solid foundation for understanding and extending the application as required.
+
+---
+*Documentation generated by* **[AutoCodeDocs.ai](https://autocodedocs.ai)**
