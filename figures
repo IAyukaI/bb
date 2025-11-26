@@ -1,0 +1,431 @@
+"""
+figury.py
+Przykładowy moduł z klasą bazową Figura oraz potomnymi klasami 2D i 3D.
+Metody (polskie nazwy):
+ - czy_przestrzenna() -> bool
+ - pole() -> float        (dla 2D: pole powierzchni; dla 3D: pole powierzchni całkowitej)
+ - obwod() -> float       (dla 2D: obwód; dla 3D: domyślnie NotImplementedError)
+ - objetosc() -> float    (dla 2D: 0.0; dla 3D: objętość bryły)
+"""
+
+from __future__ import annotations
+from dataclasses import dataclass
+import math
+from typing import Optional
+
+
+class Figura:
+    """Klasa bazowa dla wszystkich figur."""
+
+    def czy_przestrzenna(self) -> bool:
+        """Czy figura jest przestrzenna (3D)?"""
+        raise NotImplementedError
+
+    def pole(self) -> float:
+        """Pole powierzchni (dla 2D: pole; dla 3D: pole powierzchni całkowitej)."""
+        raise NotImplementedError
+
+    def obwod(self) -> float:
+        """Obwód (dla 2D). Dla 3D można nadpisać lub zostawić niezaimplementowane."""
+        raise NotImplementedError
+
+    def objetosc(self) -> float:
+        """Objętość (dla 2D zwraca 0.0)."""
+        return 0.0
+
+
+# ---------------------------
+# FIGURY 2D
+# ---------------------------
+
+@dataclass
+class Kolo(Figura):
+    promien: float
+
+    def __post_init__(self):
+        if self.promien <= 0:
+            raise ValueError("Promień musi być dodatni.")
+
+    def czy_przestrzenna(self) -> bool:
+        return False
+
+    def pole(self) -> float:
+        return math.pi * self.promien ** 2
+
+    def obwod(self) -> float:
+        return 2 * math.pi * self.promien
+
+
+@dataclass
+class Prostokat(Figura):
+    a: float
+    b: float
+
+    def __post_init__(self):
+        if self.a <= 0 or self.b <= 0:
+            raise ValueError("Boki muszą być dodatnie.")
+
+    def czy_przestrzenna(self) -> bool:
+        return False
+
+    def pole(self) -> float:
+        return self.a * self.b
+
+    def obwod(self) -> float:
+        return 2 * (self.a + self.b)
+
+
+@dataclass
+class Kwadrat(Prostokat):
+    def __init__(self, bok: float):
+        super().__init__(bok, bok)
+
+
+@dataclass
+class Trojkat(Figura):
+    a: float
+    b: float
+    c: float
+
+    def __post_init__(self):
+        if self.a <= 0 or self.b <= 0 or self.c <= 0:
+            raise ValueError("Boki muszą być dodatnie.")
+        # nierówność trójkąta
+        if not (self.a + self.b > self.c and self.a + self.c > self.b and self.b + self.c > self.a):
+            raise ValueError("Boki nie spełniają nierówności trójkąta.")
+
+    def czy_przestrzenna(self) -> bool:
+        return False
+
+    def obwod(self) -> float:
+        return self.a + self.b + self.c
+
+    def pole(self) -> float:
+        # wzór Herona
+        s = self.obwod() / 2.0
+        return math.sqrt(s * (s - self.a) * (s - self.b) * (s - self.c))
+
+
+# ---------------------------
+# FIGURY 3D (bryły)
+# ---------------------------
+
+@dataclass
+class Kula(Figura):
+    promien: float
+
+    def __post_init__(self):
+        if self.promien <= 0:
+            raise ValueError("Promień musi być dodatni.")
+
+    def czy_przestrzenna(self) -> bool:
+        return True
+
+    def pole(self) -> float:
+        # pole powierzchni kuli
+        return 4 * math.pi * self.promien ** 2
+
+    def objetosc(self) -> float:
+        return (4 / 3) * math.pi * self.promien ** 3
+
+    def obwod(self) -> float:
+        # nie ma sensu dla kuli; użytkownik powinien wiedzieć, że to nie dotyczy brył
+        raise NotImplementedError("Obwód nie ma sensu dla bryły takiej jak kula.")
+
+
+@dataclass
+class Walec(Figura):
+    promien: float
+    wysokosc: float
+
+    def __post_init__(self):
+        if self.promien <= 0 or self.wysokosc <= 0:
+            raise ValueError("Promień i wysokość muszą być dodatnie.")
+
+    def czy_przestrzenna(self) -> bool:
+        return True
+
+    def pole(self) -> float:
+        # pole powierzchni całkowitej: 2*pi*r^2 + 2*pi*r*h
+        return 2 * math.pi * self.promien ** 2 + 2 * math.pi * self.promien * self.wysokosc
+
+    def objetosc(self) -> float:
+        return math.pi * self.promien ** 2 * self.wysokosc
+
+    def obwod(self) -> float:
+        # można rozważyć obwód podstawy; zamiast tego domyślnie nie implementujemy
+        raise NotImplementedError("Użyj obwodu podstawy: 2*pi*r, jeśli potrzebne.")
+
+
+@dataclass
+class Szescian(Figura):
+    bok: float
+
+    def __post_init__(self):
+        if self.bok <= 0:
+            raise ValueError("Bok musi być dodatni.")
+
+    def czy_przestrzenna(self) -> bool:
+        return True
+
+    def pole(self) -> float:
+        # pole powierzchni sześcianu = 6 * a^2
+        return 6 * self.bok ** 2
+
+    def objetosc(self) -> float:
+        return self.bok ** 3
+
+    def obwod(self) -> float:
+        raise NotImplementedError("Obwód nie jest zdefiniowany dla bryły w tym kontekście.")
+
+
+# ---------------------------
+# PRZYKŁADOWE UŻYCIE / TESTY
+# ---------------------------
+
+if __name__ == "__main__":
+    # kilka przykładowych obiektów i wyników
+    figury = [
+        Kolo(3.0),
+        Prostokat(4.0, 5.0),
+        Kwadrat(2.5),
+        Trojkat(3.0, 4.0, 5.0),
+        Kula(2.0),
+        Walec(1.5, 4.0),
+        Szescian(2.0),
+    ]
+
+    for f in figury:
+        print("------")
+        print(f"Typ: {f.__class__.__name__}")
+        print(f"Czy przestrzenna: {f.czy_przestrzenna()}")
+        try:
+            p = f.pole()
+            print(f"Pole (powierzchnia): {p:.6f}")
+        except Exception as e:
+            print("pole():", e)
+        try:
+            o = f.obwod()
+            print(f"Obwód: {o:.6f}")
+        except NotImplementedError as e:
+            print("obwod():", e)
+        except Exception as e:
+            print("obwod():", e)
+        try:
+            v = f.objetosc()
+            print(f"Objętość: {v:.6f}")
+        except Exception as e:
+            print("objetosc():", e)
+    print("Gotowe.")
+
+
+
+
+
+
+
+
+    using System;
+
+namespace Figury
+{
+    // -------------------------------
+    //   KLASA BAZOWA
+    // -------------------------------
+    public abstract class Figura
+    {
+        public abstract bool CzyPrzestrzenna();
+        public abstract double Pole();        // 2D: pole, 3D: powierzchnia całkowita
+        public abstract double Obwod();       // 2D: obwód, 3D: zwykle nie ma sensu
+        public virtual double Objetosc() => 0; // 2D: brak objętości
+    }
+
+    // -------------------------------
+    //   FIGURY 2D
+    // -------------------------------
+
+    public class Kolo : Figura
+    {
+        public double Promien { get; }
+
+        public Kolo(double promien)
+        {
+            if (promien <= 0)
+                throw new ArgumentException("Promień musi być dodatni.");
+            Promien = promien;
+        }
+
+        public override bool CzyPrzestrzenna() => false;
+        public override double Pole() => Math.PI * Promien * Promien;
+        public override double Obwod() => 2 * Math.PI * Promien;
+    }
+
+    public class Prostokat : Figura
+    {
+        public double A { get; }
+        public double B { get; }
+
+        public Prostokat(double a, double b)
+        {
+            if (a <= 0 || b <= 0)
+                throw new ArgumentException("Boki muszą być dodatnie.");
+            A = a;
+            B = b;
+        }
+
+        public override bool CzyPrzestrzenna() => false;
+        public override double Pole() => A * B;
+        public override double Obwod() => 2 * (A + B);
+    }
+
+    public class Kwadrat : Prostokat
+    {
+        public Kwadrat(double bok) : base(bok, bok) { }
+    }
+
+    public class Trojkat : Figura
+    {
+        public double A { get; }
+        public double B { get; }
+        public double C { get; }
+
+        public Trojkat(double a, double b, double c)
+        {
+            if (a <= 0 || b <= 0 || c <= 0)
+                throw new ArgumentException("Boki muszą być dodatnie.");
+
+            if (a + b <= c || a + c <= b || b + c <= a)
+                throw new ArgumentException("Boki nie tworzą trójkąta.");
+
+            A = a; B = b; C = c;
+        }
+
+        public override bool CzyPrzestrzenna() => false;
+        public override double Obwod() => A + B + C;
+
+        public override double Pole()
+        {
+            double s = Obwod() / 2.0;
+            return Math.Sqrt(s * (s - A) * (s - B) * (s - C)); // wzór Herona
+        }
+    }
+
+    // -------------------------------
+    //   FIGURY 3D
+    // -------------------------------
+
+    public class Kula : Figura
+    {
+        public double Promien { get; }
+
+        public Kula(double promien)
+        {
+            if (promien <= 0)
+                throw new ArgumentException("Promień musi być dodatni.");
+            Promien = promien;
+        }
+
+        public override bool CzyPrzestrzenna() => true;
+
+        public override double Pole() =>
+            4 * Math.PI * Promien * Promien;   // powierzchnia kuli
+
+        public override double Objetosc() =>
+            (4.0 / 3.0) * Math.PI * Math.Pow(Promien, 3);
+
+        public override double Obwod() =>
+            throw new NotSupportedException("Kula nie ma zdefiniowanego obwodu.");
+    }
+
+    public class Walec : Figura
+    {
+        public double Promien { get; }
+        public double Wysokosc { get; }
+
+        public Walec(double promien, double wysokosc)
+        {
+            if (promien <= 0 || wysokosc <= 0)
+                throw new ArgumentException("Promień i wysokość muszą być dodatnie.");
+            Promien = promien;
+            Wysokosc = wysokosc;
+        }
+
+        public override bool CzyPrzestrzenna() => true;
+
+        public override double Pole() =>
+            2 * Math.PI * Promien * Promien +
+            2 * Math.PI * Promien * Wysokosc; // powierzchnia całkowita
+
+        public override double Objetosc() =>
+            Math.PI * Promien * Promien * Wysokosc;
+
+        public override double Obwod() =>
+            throw new NotSupportedException("Walec nie ma 'obwodu' jako bryła.");
+    }
+
+    public class Szescian : Figura
+    {
+        public double Bok { get; }
+
+        public Szescian(double bok)
+        {
+            if (bok <= 0)
+                throw new ArgumentException("Bok musi być dodatni.");
+            Bok = bok;
+        }
+
+        public override bool CzyPrzestrzenna() => true;
+        public override double Pole() => 6 * Bok * Bok;
+        public override double Objetosc() => Bok * Bok * Bok;
+
+        public override double Obwod() =>
+            throw new NotSupportedException("Sześcian nie ma obwodu.");
+    }
+
+    // -------------------------------
+    //   PRZYKŁAD UŻYCIA
+    // -------------------------------
+
+    class Program
+    {
+        static void Main()
+        {
+            Figura[] figury =
+            {
+                new Kolo(3),
+                new Prostokat(4, 5),
+                new Kwadrat(6),
+                new Trojkat(3, 4, 5),
+                new Kula(2),
+                new Walec(2, 5),
+                new Szescian(3),
+            };
+
+            foreach (var f in figury)
+            {
+                Console.WriteLine("-----------");
+                Console.WriteLine(f.GetType().Name);
+                Console.WriteLine($"Przestrzenna: {f.CzyPrzestrzenna()}");
+                Console.WriteLine($"Pole: {f.Pole():F4}");
+
+                try
+                {
+                    Console.WriteLine($"Obwód: {f.Obwod():F4}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Obwód: {e.Message}");
+                }
+
+                try
+                {
+                    Console.WriteLine($"Objętość: {f.Objetosc():F4}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Objętość: {e.Message}");
+                }
+            }
+        }
+    }
+}
