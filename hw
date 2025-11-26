@@ -1,0 +1,48 @@
+import React, { useState } from "react";
+
+export default function FilmForm() {
+  const [title, setTitle] = useState("");
+  const [genre, setGenre] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(`tytul: ${title}; rodzaj: ${genre}`);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md grid gap-4"
+      >
+        <label className="text-lg font-semibold">Tytuł filmu</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="border p-2 rounded-xl"
+        />
+
+        <label className="text-lg font-semibold">Rodzaj</label>
+        <select
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          className="border p-2 rounded-xl"
+        >
+          <option value=""></option>
+          <option value="1">Komedia</option>
+          <option value="2">Obyczajowy</option>
+          <option value="3">Sensacyjny</option>
+          <option value="4">Horror</option>
+        </select>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white font-semibold p-2 rounded-xl hover:bg-blue-700"
+        >
+          Dodaj
+        </button>
+      </form>
+    </div>
+  );
+}
